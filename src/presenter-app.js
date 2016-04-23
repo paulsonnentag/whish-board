@@ -50,7 +50,6 @@ export class PresenterApp extends Component {
 
     return (
       <div>
-        <h1>Presenter !</h1>
         <pre>
         {JSON.stringify(offer)}
         </pre>

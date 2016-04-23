@@ -1,0 +1,52 @@
+//non-essential styles imported from another pen
+
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+}
+
+html, body, #app {
+  height: 100%;
+}
+
+
+.remote-app {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .board {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    border: 1px solid #000;
+    overflow: hidden;
+  }
+
+  .sketch, .stream {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .sketch {
+    width: 100%;
+    height: 100%;
+  }
+
+  .stream {
+    left: -50%;
+  }
+}
+
+.connect-input {
+  position: absolute;
+  z-index: 999;
+}
