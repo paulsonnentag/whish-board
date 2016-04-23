@@ -4,14 +4,14 @@ export function calculateSize (width, height) {
 
   if (width > height) {
     return {
-      width: width,
-      height: width / ratio
+      width: height * ratio,
+      height: height
     };
   }
 
   return {
-    width: height * ratio,
-    height: height
+    width: width,
+    height: width / ratio
   };
 
 }
