@@ -16,7 +16,6 @@ export class Sketch extends Component {
 
     this.pad.setLineColor('#4CAF50');
 
-
     var canvas = this._sketch.querySelector('canvas');
 
     if (this.props.onChange) {

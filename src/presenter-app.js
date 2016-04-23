@@ -31,7 +31,6 @@ export class PresenterApp extends Component {
           console.log('connect');
           this.setState({connected: true});
 
-
         });
 
         this.peer.on('data', (strokes) => this.drawSketch(JSON.parse(strokes.toString())));
@@ -52,7 +51,6 @@ export class PresenterApp extends Component {
 
 
   drawSketch (strokes) {
-    console.log(strokes);
     this.setState({strokes : strokes});
   }
 

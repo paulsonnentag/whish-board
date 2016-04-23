@@ -11,7 +11,23 @@ export class RemoteApp extends Component {
   constructor () {
     super();
 
-    this.state = {connected: false};
+
+    var transform = {x: 0, y: 0, zoom: 1};
+
+    /*
+    try {
+      transform = JSON.parse(localStorage.getItem('stream-transform'));
+
+    } catch (e) {
+      console.log('transform not set, but thats fine');
+    }*/
+
+    //console.log('transform', transform);
+
+    this.state = {
+      connected: false,
+      transform: transform
+    };
   }
 
   componentDidMount () {
@@ -36,6 +52,42 @@ export class RemoteApp extends Component {
       this._video.src = window.URL.createObjectURL(stream);
       this._video.play();
     });
+
+    document.addEventListener('keyup', (e) => this.keyHandler(e));
+  }
+
+  keyHandler (e) {
+    var transform = this.state.transform;
+
+    switch (e.keyCode) {
+      case 37: // left
+        transform.x -= 1;
+        break;
+
+      case 38: // up
+        transform.y -= 1;
+        break;
+
+      case 39: // right
+        transform.x += 1;
+        break;
+
+      case 40: // down
+        transform.y += 1;
+        break;
+
+      case 74: // j
+        transform.zoom += 0.002;
+        break;
+
+      case 75: // k
+        transform.zoom -= 0.002;
+        break;
+    }
+
+    this.setState({transform : transform});
+
+    //localStorage.setItem(JSON.stringify(transform));
   }
 
   accept () {
@@ -45,14 +97,14 @@ export class RemoteApp extends Component {
 
   transmitSketch (strokes) {
     if (this.state.connected) {
-      console.log(strokes);
-
       this.peer.send(JSON.stringify(strokes));
     }
   }
 
   render () {
-    const {answer, connected, width, height} = this.state;
+    const {answer, connected, width, height, transform} = this.state;
+    const transformProp = 'scale(' + transform.zoom + ','+ transform.zoom +')'
+    + 'translate(' + transform.x + 'px, ' + transform.y + 'px)';
 
     return (
       <div className="remote-app">
@@ -73,7 +125,7 @@ export class RemoteApp extends Component {
              ref={(c) => this._board = c}
              style={{width: width, height: height}}>
           <video className="stream"
-                 style={{height: height}}
+                 style={{height: height, transform: transformProp}}
                  ref={(c) => this._video = c} />
           <Sketch ref={(c) => this._sketch = c}
                   onChange={(strokes) => this.transmitSketch(strokes)}/>

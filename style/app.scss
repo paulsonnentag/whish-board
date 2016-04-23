@@ -55,7 +55,13 @@ html, body, #app {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    canvas {
+      border: 1px solid red;
+    }
   }
+
+
 }
 
 .connect-input {
