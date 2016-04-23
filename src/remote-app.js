@@ -16,10 +16,16 @@ export class RemoteApp extends Component {
       }
     });
 
-    this.state = {};
+    this.state = {connected: false};
 
-    this.peer.on('connect', function () {
+    this.peer.on('connect', () => {
       console.log('connect');
+      this.setState({connected: true});
+    });
+
+    this.peer.on('stream', (stream) => {
+      this._video.src = window.URL.createObjectURL(stream)
+      this._video.play();
     });
   }
 
@@ -29,14 +35,26 @@ export class RemoteApp extends Component {
   }
 
   render () {
-    const {answer} = this.state;
+    const {answer, connected} = this.state;
+
+    if (connected) {
+      return (
+        <div>
+          <video ref={(c) => this._video = c} />
+          <h1>Remote !</h1>
+        </div>
+      );
+    }
 
     return (
       <div>
+        <video ref={(c) => this._video = c} />
         <h1>Remote !</h1>
         <pre>
         {JSON.stringify(answer)}
         </pre>
+
+
 
         <input ref={(c) => this._input = c}/>
         <button onClick={(evt) => this.accept()}>join</button>

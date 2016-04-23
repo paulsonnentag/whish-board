@@ -7,35 +7,50 @@ export class PresenterApp extends Component {
 
   constructor () {
     super();
-    
-    this.peer = new Peer({initiator: true});
 
-    this.peer.on('signal', (data) => {
-      if (data.type === 'offer') {
-        this.setState({ offer : data});
-      }
-    });
+    this.state = {connected: false};
 
-    this.state = {};
+    navigator.webkitGetUserMedia(
+      { video: true, audio: false },
+      (stream) => {
+        this.peer = new Peer({
+          initiator: true,
+          stream: stream
+        });
 
-    this.peer.on('connect', () => {
-      console.log('connect');
-    });
+        this.peer.on('signal', (data) => {
+          if (data.type === 'offer') {
+            this.setState({ offer : data});
+          }
+        });
+
+        this.peer.on('connect', () => {
+          console.log('connect');
+          this.setState({connected: true});
+        });
+      },
+      () => {}
+    );
+
   }
 
   accept () {
     var answer = JSON.parse(this._input.value);
-    console.log(answer);
-
     this.peer.signal(answer);
   }
 
   render () {
-    const {offer} = this.state;
+    const {offer, connected} = this.state;
+
+    if (connected) {
+      return (
+        <h1>Presenter !</h1>
+      )
+    }
 
     return (
       <div>
-      <h1>Presenter !</h1>
+        <h1>Presenter !</h1>
         <pre>
         {JSON.stringify(offer)}
         </pre>
