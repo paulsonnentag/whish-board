@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import Peer from  'simple-peer';
+import { Sketch } from './sketch';
+import { calculateSize } from './layout';
 
 require('../style/app.scss');
+
 
 export class PresenterApp extends Component {
 
@@ -27,11 +30,30 @@ export class PresenterApp extends Component {
         this.peer.on('connect', () => {
           console.log('connect');
           this.setState({connected: true});
+
+
         });
+
+        this.peer.on('data', (strokes) => this.drawSketch(JSON.parse(strokes.toString())));
       },
       () => {}
     );
 
+  }
+
+  componentDidMount () {
+    var size = calculateSize(
+      this._app.clientWidth,
+      this._app.clientHeight
+    );
+
+    this.setState(size);
+  }
+
+
+  drawSketch (strokes) {
+    console.log(strokes);
+    this.setState({strokes : strokes});
   }
 
   accept () {
@@ -40,22 +62,23 @@ export class PresenterApp extends Component {
   }
 
   render () {
-    const {offer, connected} = this.state;
-
-    if (connected) {
-      return (
-        <h1>Presenter !</h1>
-      )
-    }
+    const {offer, connected, strokes, width, height} = this.state;
 
     return (
-      <div>
-        <pre>
-        {JSON.stringify(offer)}
-        </pre>
-
-        <input ref={(c) => this._input = c} />
-        <button onClick={(evt) => this.accept()}>join</button>
+      <div className="presenter-app"
+           ref={(c) => this._app = c}>
+        { !connected ?
+          (<div className="connect-input">
+              <pre>
+              {JSON.stringify(offer)}
+              </pre>
+              <input ref={(c) => this._input = c} />
+              <button onClick={(evt) => this.accept()}>join</button>
+            </div>)
+          :
+          null
+        }
+        <Sketch strokes={strokes} disabled={true}/>
       </div>
     );
   }

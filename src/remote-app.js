@@ -11,6 +11,14 @@ export class RemoteApp extends Component {
   constructor () {
     super();
 
+    this.state = {connected: false};
+  }
+
+  componentDidMount () {
+    var size = calculateSize(this._board.clientWidth, this._board.clientHeight);
+    this.setState(size);
+
+
     this.peer = new Peer();
 
     this.peer.on('signal', (data) => {
@@ -18,8 +26,6 @@ export class RemoteApp extends Component {
         this.setState({answer: data});
       }
     });
-
-    this.state = {connected: false};
 
     this.peer.on('connect', () => {
       console.log('connect');
@@ -32,14 +38,17 @@ export class RemoteApp extends Component {
     });
   }
 
-  componentDidMount () {
-    var size = calculateSize(this._board.clientWidth, this._board.clientHeight);
-    this.setState(size);
-  }
-
   accept () {
     var offer = JSON.parse(this._input.value);
     this.peer.signal(offer);
+  }
+
+  transmitSketch (strokes) {
+    if (this.state.connected) {
+      console.log(strokes);
+
+      this.peer.send(JSON.stringify(strokes));
+    }
   }
 
   render () {
@@ -62,11 +71,12 @@ export class RemoteApp extends Component {
 
         <div className="board"
              ref={(c) => this._board = c}
-             style={{width: width, height: height, }}>
+             style={{width: width, height: height}}>
           <video className="stream"
                  style={{height: height}}
                  ref={(c) => this._video = c} />
-          <Sketch/>
+          <Sketch ref={(c) => this._sketch = c}
+                  onChange={(strokes) => this.transmitSketch(strokes)}/>
         </div>
 
       </div>
