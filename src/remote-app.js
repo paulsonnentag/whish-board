@@ -64,12 +64,30 @@ export class RemoteApp extends Component {
   }
 
   matchHandler (match) {
-    this._pad.erase(match.map((pos) => {
+    
+
+    var strokes = match.map((pos) => {
+      var x = ((pos.x * 0.80) / (640) - 0.25) * this._board.clientHeight * (640 / 480) + this.state.transform.x;
+      var y = ((pos.y * 0.80) / (480)) * this._board.clientHeight + this.state.transform.y;
+
       return {
-        x: ((pos.x + this.state.transform.x) * this.state.transform.zoom - (this._board.clientHeight * 0.33)) / this._board.clientWidth,
-        y: ((pos.y + this.state.transform.y) * this.state.transform.zoom) / this._board.clientHeight
+        x: x - (35 / this.state.transform.zoom) ,
+        y: y - (50 / this.state.transform.zoom)
+      };
+
+      return {
+        x: (((((pos.x / 640) * this._board.clientWidth) + this.state.transform.x) * this.state.transform.zoom) - (this._board.clientHeight * 0.25)) / this._board.clientWidth,
+        y: ((((pos.y / 480) * this._board.clientHeight) + this.state.transform.y) * this.state.transform.zoom) / this._board.clientHeight
       }
-    }));
+    });
+
+    this._pad.erase({
+      transform: this.state.transform,
+
+      debug: false,
+
+      strokes: strokes
+    });
 
     if (this.state.connected) {
       this.peer.send(JSON.stringify(this._pad.strokes));
@@ -156,3 +174,5 @@ export class RemoteApp extends Component {
     )
   }
 }
+
+//style={{height: height, transform: transformProp}}
