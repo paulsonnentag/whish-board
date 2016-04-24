@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Sketchpad from 'responsive-sketchpad';
+import Sketchpad from './lib/responsive-sketchpad';
 import { calculateSize } from './layout';
 
 export class Sketch extends Component {
@@ -26,6 +26,10 @@ export class Sketch extends Component {
       canvas.addEventListener('mouseup', () => this.update());
       canvas.addEventListener('mouseleave', () => this.update());
       canvas.addEventListener('touchend', () => this.update());
+    }
+
+    if (this.props.padRef) {
+      this.props.padRef(this.pad);
     }
   }
 

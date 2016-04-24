@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import Peer from  'simple-peer';
 import { Sketch } from './sketch';
 import { calculateSize } from './layout';
+import { startTracking } from './ar';
 
 require('../style/app.scss');
 
@@ -51,9 +52,28 @@ export class RemoteApp extends Component {
     this.peer.on('stream', (stream) => {
       this._video.src = window.URL.createObjectURL(stream);
       this._video.play();
+
+      startTracking(this._video, (matches) => {
+
+        matches.forEach((match) => this.matchHandler(match));
+
+      });
     });
 
     document.addEventListener('keyup', (e) => this.keyHandler(e));
+  }
+
+  matchHandler (match) {
+    this._pad.erase(match.map((pos) => {
+      return {
+        x: ((pos.x + this.state.transform.x) * this.state.transform.zoom - (this._board.clientHeight * 0.33)) / this._board.clientWidth,
+        y: ((pos.y + this.state.transform.y) * this.state.transform.zoom) / this._board.clientHeight
+      }
+    }));
+
+    if (this.state.connected) {
+      this.peer.send(JSON.stringify(this._pad.strokes));
+    }
   }
 
   keyHandler (e) {
@@ -128,6 +148,7 @@ export class RemoteApp extends Component {
                  style={{height: height, transform: transformProp}}
                  ref={(c) => this._video = c} />
           <Sketch ref={(c) => this._sketch = c}
+                  padRef = {(pad) => this._pad = pad}
                   onChange={(strokes) => this.transmitSketch(strokes)}/>
         </div>
 

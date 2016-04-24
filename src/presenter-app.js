@@ -46,10 +46,11 @@ export class PresenterApp extends Component {
       this._app.clientHeight
     );
 
+    this._ctx = this._app.querySelector('canvas').getContext('2d');
+
     this.setState(size);
   }
-
-
+  
   drawSketch (strokes) {
     this.setState({strokes : strokes});
   }
